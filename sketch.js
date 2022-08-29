@@ -1,6 +1,6 @@
 var rocket;
 var popi;
-var lifespan = 200;
+var lifespan = 400;
 var lifeP;
 var count = 0;
 var target;
@@ -34,7 +34,7 @@ function draw() {
 
 function Population() {
   this.rockets = [];
-  this.popsize = 1000;
+  this.popsize = 500;
 
   for (var i = 0; i < this.popsize; i++) {
     this.rockets[i] = new Rocket()

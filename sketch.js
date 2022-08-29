@@ -1,17 +1,29 @@
 var rocket;
 var popi;
-var lifespan = 400;
+var lifespan = 200;
 var lifeP;
 var count = 0;
 var target;
 var mutationRate;
 var walls = []
+var popNum = 1
+var arrived = 0
+var crashed = 0
 
 function setup() {
   createCanvas(400, 400);
   rocket = new Rocket()
   popi = new Population()
-  lifeP = createP()
+  numberPopShow = createP()
+  numberPopShow.class('center-infos')
+  PopSizeShow = createP()
+  PopSizeShow.class('center-infos')
+  mutationShow = createP()
+  mutationShow.class('center-infos')
+  arrivedShow = createP()
+  arrivedShow.class('center-infos')
+  crashedShow = createP()
+  crashedShow.class('center-infos')
   target = createVector(width/2, 50)
   mutationRate = 0.01
   walls.push(new Wall(width/2, 100, width/4, 10))
@@ -24,10 +36,17 @@ function draw() {
   })
   ellipse(target.x, target.y, 16, 16)
   popi.run()
-  lifeP.html(count)
+  numberPopShow.html("Number of populations : " + popNum)
+  PopSizeShow.html("Size of the population : " + popi.popsize)
+  mutationShow.html("Mutation rate : " + mutationRate)
+  arrivedShow.html("Arrived rate : " + arrived + '%')
+  crashedShow.html("Crashed rate : " + crashed + '%')
   count++
   if (count == lifespan) {
+    [arrived, crashed] = popi.finalStates()
+    console.log(arrived, crashed)
     popi = popi.createNewPop()
+    popNum++
     count = 0
   }
 }
@@ -101,6 +120,24 @@ function Population() {
     }
     return this.rockets[i-1]
   }
+
+  this.finalStates = function() {
+    var arrive = 0
+    var crash = 0
+    this.rockets.forEach((rocket) => {
+      switch(rocket.hasTouched) {
+        case -1:
+          crash++
+          break
+        case 1:
+          console.log("yo")
+          arrive++
+          break
+      }
+    })
+    console.log(int(arrive*100/this.popsize))
+    return  [int(arrive*100/this.popsize), int(crash*100/this.popsize)]
+  }
 }
 
 function DNA() {
@@ -159,7 +196,7 @@ function Rocket() {
         hasHitWall = true
       }
     })
-    if (d <= 15 || hasHitWall) {
+    if (d <= 10 || hasHitWall) {
       this.acc = createVector()
       this.hasTouched = hasHitWall ? -1 : 1
     }
